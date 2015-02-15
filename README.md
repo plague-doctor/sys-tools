@@ -8,6 +8,7 @@ Pinger.py is fast, multi-threaded ping and reverse dns lookup tool written in Py
 Required depencency:
 
 cidrize  -  Cidrize parses IPv4/IPv6 addresses, CIDRs, ranges, and wildcard matches & attempts return a valid list of IP addresses.
+
 netaddr  -  Pythonic manipulation of IPv4, IPv6, CIDR, EUI and MAC network addresses.
 
 Usage:
