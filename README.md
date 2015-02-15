@@ -20,11 +20,6 @@ Usage:
         -d  --dns  dns=     Specify a DNS server
         -r  --resolve       Resolve DNS name
 
-    returned symbols:
-        ✔    - Host is ALIVE and resolves properly.
-        ✔    - Host is ALIVE but doesn't resolve.
-        ✘    - Host id DOWN but resolves.
-
     <IP> is very flexible and can be one of any of the following formats:
 
         192.0.2.18                192.0.2.18/32
