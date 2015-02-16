@@ -5,6 +5,7 @@ import os
 import re
 import sys
 import getopt
+import pipes
 from threading import Thread
 from cidrize import cidrize
 from netaddr import IPNetwork
@@ -25,7 +26,7 @@ class testip(Thread):
         self.ip = ip
         self.status = -1
     def run(self):
-        pingcli = os.popen("ping -q -c2 -W1 "+self.ip,"r")
+        pingcli = os.popen("ping -q -c2 -W1 " + pipes.quote(self.ip) ,"r")
         while 1:
             line = pingcli.readline()
             if not line: break
@@ -35,9 +36,9 @@ class testip(Thread):
 
 def resolve(host,my_dns):
     if my_dns:
-        fh = os.popen('dig @' + my_dns + ' +short -x ' + host)
+        fh = os.popen('dig @' + pipes.quote(my_dns) + ' +short -x ' + pipes.quote(host))
     else:
-        fh = os.popen('dig +short -x ' + host)
+        fh = os.popen('dig +short -x ' + pipes.quote(host))
     out = fh.read()
     out = out.replace("\n"," ")
     rc  = fh.close()
@@ -71,7 +72,7 @@ def usage():
         192.0.2.80-192.0.2.85     192.0.2.170-175
         192.0.2.8[0-5]            192.0.2.[5678]
 
-  .............................................:: Asazello, 16.02.15 ::...
+  .........................................:: Jack Gargasz, 16.02.15 ::...
     """
 
 def main(argv):
