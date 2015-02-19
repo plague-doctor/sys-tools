@@ -26,3 +26,11 @@ Usage:
         192.0.20.64/26            192.0.2.*
         192.0.2.80-192.0.2.85     192.0.2.170-175
         192.0.2.8[0-5]            192.0.2.[5678]
+
+====== time-drift.py ======
+
+Time-drift.py shows the difference between time on local machine and time provided by NTP server.
+
+Usage:
+    time-drift.py ntp-server
+
