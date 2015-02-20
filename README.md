@@ -1,9 +1,9 @@
-asazello/sys-tools
-==================
+# asazello/sys-tools
+
 This repository is an eclectic collection of different Linux system administrator tools.
 
-pinger.py
----------
+## pinger.py
+
 Pinger.py is fast, multi-threaded ping and reverse dns lookup tool written in Python.
 
 Required depencency:
@@ -28,8 +28,8 @@ Usage:
         192.0.2.80-192.0.2.85     192.0.2.170-175
         192.0.2.8[0-5]            192.0.2.[5678]
 
-time-drift.py
--------------
+## time-drift.py
+
 Time-drift.py shows the difference between time on local machine and time provided by NTP server.
 
 Usage:
