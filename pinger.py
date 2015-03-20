@@ -53,7 +53,7 @@ def usage():
     Synopsis:
         Pinger is fast, multi-threaded ping and reverse dns lookup tool.
 
-    usage: pinger.py [-d <DNS-IP>]  [-r]  [-i]  <IP>
+    usage: pinger.py [-d <DNS-IP>]  [-r]  [-i]  <IP> [<IP> ... <IP>]
 
     options:
         -i  --ip   ip=      IP address/range
@@ -72,7 +72,7 @@ def usage():
         192.0.2.80-192.0.2.85     192.0.2.170-175
         192.0.2.8[0-5]            192.0.2.[5678]
 
-  .............................................:: Asazello, 16.03.18 ::...
+  .............................................:: Asazello, 20.03.15 ::...
     """
 
 def main(argv):
@@ -103,11 +103,11 @@ def main(argv):
 
     for my_cidr in args:
         try:
-            scidr = cidrize(my_cidr,strict=True)
+            test_scidr = cidrize(my_cidr,strict=True)
         except:
             pass
         else:
-            break
+            scidr.extend(test_scidr)
 
     if not scidr:
         usage()
