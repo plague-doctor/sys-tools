@@ -7,8 +7,19 @@ import sys
 import getopt
 import pipes
 from threading import Thread
-from cidrize import cidrize
-from netaddr import IPNetwork
+try:
+    from cidrize import cidrize
+except ImportError:
+    print "You are missing cidrize..."
+    print "Install it: pip install cidrize"
+    sys.exit(2)
+
+try:
+    from netaddr import IPNetwork
+except ImportError:
+    print "You are missing netaddr..."
+    print "Install it: pip install netaddr"
+    sys.exit(2)
 
 class bcolors:
     HEADER = '\033[95m'
@@ -26,7 +37,8 @@ class testip(Thread):
         self.ip = ip
         self.status = -1
     def run(self):
-        pingcli = os.popen("ping -q -c2 -W1 " + pipes.quote(self.ip) ,"r")
+        cmd = "ping -q -c2 -W1 %s" %(self.ip)
+        pingcli = os.popen(cmd ,"r")
         while 1:
             line = pingcli.readline()
             if not line: break
@@ -40,7 +52,7 @@ def resolve(host,my_dns):
     else:
         fh = os.popen('dig +short -x ' + pipes.quote(host))
     out = fh.read()
-    out = out.replace("\n"," ")
+    out = out.replace(".\n"," ")
     rc  = fh.close()
     if rc:
         out = "NONE"
@@ -53,12 +65,14 @@ def usage():
     Synopsis:
         Pinger is fast, multi-threaded ping and reverse dns lookup tool.
 
-    usage: pinger.py [-d <DNS-IP>]  [-r]  [-i]  <IP> [<IP> ... <IP>]
+    usage:
+        pinger.py [-d <DNS-IP>]  [-r]  [-i]  [-f]  <IP> [<IP> ... <IP>]
 
     options:
         -i  --ip   ip=      IP address/range
         -d  --dns  dns=     Specify a DNS server
         -r  --resolve       Resolve DNS name
+        -f  --free-only     Display only free (Down) IPs
 
     returned symbols:"""
     print "        " + bcolors.OKGREEN + "✔ " + bcolors.ENDC + "   - Host is ALIVE and resolves properly."
@@ -72,12 +86,13 @@ def usage():
         192.0.2.80-192.0.2.85     192.0.2.170-175
         192.0.2.8[0-5]            192.0.2.[5678]
 
-  .............................................:: Asazello, 20.03.15 ::...
+  .............................................:: Asazello, 02.07.15 ::...
     """
 
 def main(argv):
     my_dns = ""
     resolvedns = False
+    free_only = False
     my_cidr = ""
     scidr = []
     pinglist = []
@@ -85,7 +100,7 @@ def main(argv):
     report = ("Down","Partial Response","Alive")
 
     try:
-        opts, args = getopt.getopt(argv, "hi:rd:", ["help", "ip=", "resolve", "dns="])
+        opts, args = getopt.getopt(argv, "hi:rfd:", ["help", "ip=", "resolve", "free-only", "dns="])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -100,6 +115,8 @@ def main(argv):
             args.insert(0,arg)
         elif opt in ("-d", "--dns"):
             my_dns = arg
+        elif opt in ("-f", "--free-only"):
+            free_only = True
 
     for my_cidr in args:
         try:
@@ -130,14 +147,17 @@ def main(argv):
                     print "   " + pings.ip + "  " + resolved + "- " + report[pings.status]
             else:
                 if resolved:
-                    print bcolors.OKGREEN + "✔ " + bcolors.ENDC + " " + pings.ip + "  " + resolved + "- " + report[pings.status]
+                    if not free_only:
+                        print bcolors.OKGREEN + "✔ " + bcolors.ENDC + " " + pings.ip + "  " + resolved + "- " + report[pings.status]
                 else:
-                    print bcolors.OKBLUE + "✔ " + bcolors.ENDC + " " + pings.ip + "  " + resolved + "- " + report[pings.status]
+                    if not free_only:
+                        print bcolors.OKBLUE + "✔ " + bcolors.ENDC + " " + pings.ip + "  " + resolved + "- " + report[pings.status]
         else:
             if report[pings.status] == "Down":
                 print "  " + pings.ip + " - " + report[pings.status]
             else:
-                print bcolors.OKGREEN + "✔ " + bcolors.ENDC + pings.ip + " - " + report[pings.status]
+                if not free_only:
+                    print bcolors.OKGREEN + "✔ " + bcolors.ENDC + pings.ip + " - " + report[pings.status]
 
 if __name__ == "__main__":
     if not sys.argv[1:]:
